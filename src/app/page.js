@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { Login } from "@/components/auth/Login";
 import Link from "next/link";
+import { Logout } from "@/components/auth/Logout";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -16,9 +17,12 @@ export default async function Home() {
         </h2>
 
         <div className="flex w-full  justify-center gap-5 mb-5">
-          <Login />
+          {session?.user ? <Logout /> : <Login />}
           <Link href={"/register"}>
             <Button>Sign Up</Button>
+          </Link>
+          <Link href={"/dashboard"}>
+            <Button>Dashboard</Button>
           </Link>
         </div>
         <UserInfo />
