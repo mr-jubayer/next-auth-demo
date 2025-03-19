@@ -1,6 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import { collectionNames, connectDB } from "./connectDB";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
+import { collectionNames, connectDB } from "./connectDB";
 
 const authOptions = {
   providers: [
@@ -40,8 +41,31 @@ const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      const payload = {
+        userId: user.id,
+        username: user.name,
+        emailAddress: user.email,
+        photo: user.image,
+        provider: account.provider,
+        providerAccountId: account.providerAccountId,
+      };
+
+      const isExist = await connectDB(collectionNames.USERS).findOne({
+        userId: user.id,
+      });
+
+      if (!isExist) {
+        await connectDB(collectionNames.USERS).insertOne(payload);
+      }
+      return true;
+    },
     async session({ session, token, user }) {
       if (token) {
         session.user.username = token.username;
@@ -61,3 +85,15 @@ const authOptions = {
 };
 
 export { authOptions };
+
+/**
+ * TODO:
+ *
+ * 1. Integrate github provider - done
+ * 2. Integrate facebook provider - wait
+ * 3. Take callback - signIn method and log signIn info
+ * 4. validate the user:
+ *    - if the user is already exist in my db then signIn
+ *    - if the user haven't create new user and store user with a role "user"
+ *
+ * */
