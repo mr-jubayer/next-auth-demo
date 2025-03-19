@@ -1,10 +1,10 @@
 "use server";
 
-import { connectDB } from "@/lib/connectDB";
+import { collectionNames, connectDB } from "@/lib/connectDB";
 
 const registerUser = async (payload) => {
   try {
-    const result = await connectDB("users").insertOne(payload);
+    const result = await connectDB(collectionNames.USERS).insertOne(payload);
     return { result };
   } catch (error) {
     console.log(error);

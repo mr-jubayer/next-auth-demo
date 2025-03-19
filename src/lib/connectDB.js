@@ -2,6 +2,10 @@ import { ServerApiVersion, MongoClient } from "mongodb";
 
 const uri = "mongodb://localhost:27017/next-auth";
 
+const collectionNames = {
+  USERS: "users",
+};
+
 const connectDB = (collection) => {
   const client = new MongoClient(uri, {
     serverApi: {
@@ -14,4 +18,4 @@ const connectDB = (collection) => {
   return client.db().collection(collection);
 };
 
-export { connectDB };
+export { connectDB, collectionNames };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Button from "../../../components/ui/Button";
 import { registerUser } from "@/app/actions/auth/registerUser";
 
@@ -18,7 +18,7 @@ const Register = () => {
     const payload = { username, password };
     const result = await registerUser(payload);
 
-    console.log(result);
+    router.push("/");
   };
   return (
     <div>
