@@ -1,6 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import NextAuth from "next-auth";
+import { connectDB } from "@/lib/connectDB";
 
 const authOptions = {
   providers: [
@@ -16,12 +17,14 @@ const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        console.log(credentials);
+        const { username, password } = credentials;
 
-        // Add logic here to look up the user from the credentials supplied
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+        const user = await connectDB("users").findOne({ username });
+        if (!user) return;
 
-        if (user) {
+        const isPasswordOk = user.password === password;
+
+        if (isPasswordOk) {
           // Any object returned will be saved in `user` property of the JWT
           return user;
         } else {
@@ -33,8 +36,25 @@ const authOptions = {
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      if (token) {
+        session.user.username = token.username;
+        session.user.role = token.role;
+      }
+
+      return session;
+    },
+    async jwt({ token, user, account, profile, isNewUser }) {
+      if (user) {
+        token.username = user.username;
+        token.role = user.role;
+      }
+      return token;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST, authOptions };

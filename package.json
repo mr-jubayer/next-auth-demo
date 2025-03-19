@@ -2,6 +2,7 @@
   "name": "project3",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -9,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "mongodb": "^6.15.0",
     "next": "15.2.2",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
